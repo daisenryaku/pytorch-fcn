@@ -1,9 +1,10 @@
 # pytorch-fcn
-Fully Convolutional Networks Implemented in PyTorch
+[Fully Convolutional Networks](https://people.eecs.berkeley.edu/~jonlong/long_shelhamer_fcn.pdf) implemented in PyTorch
 
 ## Requirements
-- pytorch == 0.2.0
-- torchvision == 0.1.7
+- pytorch
+- torchvision
+- visdom
 - scipy
 - tqdm
 
@@ -12,6 +13,12 @@ Fully Convolutional Networks Implemented in PyTorch
 ```shell
 sudo pip install -r requirements.txt
 ```
+
+## Data
+Support Pascal VOC 2012 dataset. 
+1. Download data from [here](http://host.robots.ox.ac.uk/pascal/VOC/voc2012/#data). 
+2. Download benckmark from [here](https://www2.eecs.berkeley.edu/Research/Projects/CS/vision/grouping/semantic_contours/)
+3. Extract the *VOCtrainval_11-May-2012.tar* and *benchmark_RELEASE.tgz*, modify the data path in *config.py*.
 
 ## To train the model:
 ```shell
