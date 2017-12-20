@@ -1,5 +1,5 @@
 # pytorch-fcn
-Fully Convolutional Networks[1] implemented in PyTorch. Some of the code are borrowed from [2], [3], [4]. Thanks them very much.
+Fully Convolutional Networks[1] implemented in PyTorch. Although [2], [3] have implemeted it very well, the purpose of this repository is for me to gain familarity with semantic segmentation with pytorch implementations. Some of the code are borrowed from [2], [3], [4]. Thanks them very much.
 
 ## Requirements
 - python 3.6
@@ -38,8 +38,9 @@ python main.py --phase test --in_path xxx/xxx.jpg --out_path ./results/
 ```
 
 ## Result
-![](results/2008_000002.jpg)
-![](results/result_2008_000002.jpg)
+![](results/2008_000002.jpg) | ![](results/result_2008_000002.jpg)
+:---------------------------:|:----------------------------------:
+Displayed Raw jpg            |Displayed Predictions jpg
 
 ## Reference
 [1] [Long J, Shelhamer E, Darrell T. Fully convolutional networks for semantic segmentation[C]//Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition. 2015: 3431-3440.](https://people.eecs.berkeley.edu/~jonlong/long_shelhamer_fcn.pdf)
