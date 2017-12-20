@@ -86,6 +86,7 @@ def test(args):
     model = FCN8s()
     model.load(args.model_path)
     model.cuda()
+    model.eval()
     images = Variable(img.cuda())
     outputs = model(images)
     pred = np.squeeze(outputs.data.max(1)[1].cpu().numpy(), axis=0)

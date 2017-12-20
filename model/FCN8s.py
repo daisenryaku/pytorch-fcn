@@ -14,14 +14,16 @@ class FCN8s(BasicModule):
             nn.ReLU(inplace=True),
             nn.Conv2d(64, 64, 3, padding=1),
             nn.ReLU(inplace=True),
-            nn.MaxPool2d(2, stride=2, ceil_mode=True),)
+            nn.MaxPool2d(2, stride=2, ceil_mode=True),
+        )
 
         self.conv_block2 = nn.Sequential(
             nn.Conv2d(64, 128, 3, padding=1),
             nn.ReLU(inplace=True),
             nn.Conv2d(128, 128, 3, padding=1),
             nn.ReLU(inplace=True),
-            nn.MaxPool2d(2, stride=2, ceil_mode=True),)
+            nn.MaxPool2d(2, stride=2, ceil_mode=True),
+        )
 
         self.conv_block3 = nn.Sequential(
             nn.Conv2d(128, 256, 3, padding=1),
@@ -30,7 +32,8 @@ class FCN8s(BasicModule):
             nn.ReLU(inplace=True),
             nn.Conv2d(256, 256, 3, padding=1),
             nn.ReLU(inplace=True),
-            nn.MaxPool2d(2, stride=2, ceil_mode=True),)
+            nn.MaxPool2d(2, stride=2, ceil_mode=True),
+        )
 
         self.conv_block4 = nn.Sequential(
             nn.Conv2d(256, 512, 3, padding=1),
@@ -39,7 +42,8 @@ class FCN8s(BasicModule):
             nn.ReLU(inplace=True),
             nn.Conv2d(512, 512, 3, padding=1),
             nn.ReLU(inplace=True),
-            nn.MaxPool2d(2, stride=2, ceil_mode=True),)
+            nn.MaxPool2d(2, stride=2, ceil_mode=True),
+        )
 
         self.conv_block5 = nn.Sequential(
             nn.Conv2d(512, 512, 3, padding=1),
@@ -48,7 +52,8 @@ class FCN8s(BasicModule):
             nn.ReLU(inplace=True),
             nn.Conv2d(512, 512, 3, padding=1),
             nn.ReLU(inplace=True),
-            nn.MaxPool2d(2, stride=2, ceil_mode=True),)
+            nn.MaxPool2d(2, stride=2, ceil_mode=True),
+        )
 
         self.classifier = nn.Sequential(
             nn.Conv2d(512, 4096, 7),
@@ -57,10 +62,15 @@ class FCN8s(BasicModule):
             nn.Conv2d(4096, 4096, 1),
             nn.ReLU(inplace=True),
             nn.Dropout2d(),
-            nn.Conv2d(4096, self.n_classes, 1),)
+            nn.Conv2d(4096, self.n_classes, 1),
+        )
 
         self.score_pool4 = nn.Conv2d(512, self.n_classes, 1)
         self.score_pool3 = nn.Conv2d(256, self.n_classes, 1)
+
+        self.upscore = nn.ConvTranspose2d(self.n_classes, self.n_classes, 16, stride=8)
+        self.upscore4 = nn.ConvTranspose2d(self.n_classes, self.n_classes, 4, stride=2)
+        self.upscore5 = nn.ConvTranspose2d(self.n_classes, self.n_classes, 4, stride=2)
 
     def forward(self, x):
         conv1 = self.conv_block1(x)
@@ -68,16 +78,20 @@ class FCN8s(BasicModule):
         conv3 = self.conv_block3(conv2)
         conv4 = self.conv_block4(conv3)
         conv5 = self.conv_block5(conv4)
+        score5 = self.classifier(conv5)
+        
+        upscore5 = self.upscore5(score5)
+        score4 = self.score_pool4(conv4)
+        score4 = score4[:, :, 5:5+upscore5.size()[2], 5:5+upscore5.size()[3]].contiguous()
+        score4 += upscore5
 
-        score = self.classifier(conv5)
-        score_pool4 = self.score_pool4(conv4)
-        score_pool3 = self.score_pool3(conv3)
+        upscore4 = self.upscore4(score4)
+        score3 = self.score_pool3(conv3)
+        score3 = score3[:, :, 9:9+upscore4.size()[2], 9:9+upscore4.size()[3]].contiguous()
+        score3 += upscore4
 
-        score = F.upsample_bilinear(score, score_pool4.size()[2:])
-        score += score_pool4
-        score = F.upsample_bilinear(score, score_pool3.size()[2:])
-        score += score_pool3
-        out = F.upsample_bilinear(score, x.size()[2:])
+        out = self.upscore(score3)
+        out = out[:, :, 31:31+x.size()[2], 21:21+x.size()[3]].contiguous()
         return out
 
 
