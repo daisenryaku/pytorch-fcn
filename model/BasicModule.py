@@ -13,6 +13,6 @@ class BasicModule(nn.Module):
     def save(self, name=None):
         if not name:
             prefix = 'checkpoints/' + self.model_name + '_'
-            name = time.strftime(prefix + '%m%d_%H%M.pth')
+            name = time.strftime(prefix + '%m%d_%H%M.pkl')
         torch.save(self.state_dict(), name)
         return name
