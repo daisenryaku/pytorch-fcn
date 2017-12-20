@@ -1,6 +1,5 @@
 import os
 import collections
-import json
 import torch
 import torchvision
 import numpy as np
@@ -8,7 +7,6 @@ import scipy.misc as m
 import scipy.io as io
 
 from config import config
-
 from tqdm import tqdm
 from torch.utils import data
 
@@ -57,8 +55,6 @@ class VOCbase(data.Dataset):
         img = img.astype(np.float64)
         img -= self.mean
         img = m.imresize(img, (self.img_size[0], self.img_size[1]))
-        # Resize scales images from 0 to 255, thus we need
-        # to divide by 255.0
         img = img.astype(float) / 255.0
         # NHWC -> NCWH
         img = img.transpose(2, 0, 1)

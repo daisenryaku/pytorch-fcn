@@ -1,5 +1,5 @@
 # pytorch-fcn
-Fully Convolutional Networks[1] implemented in PyTorch. Some of the code arr borrowed from [2], [3]. Thanks them very much.
+Fully Convolutional Networks[1] implemented in PyTorch. Some of the code are borrowed from [2], [3]. Thanks them very much.
 
 ## Requirements
 - python 3.6

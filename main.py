@@ -1,25 +1,20 @@
-import sys
-import torch
 import argparse
-import numpy as np
-import torch.nn as nn
-import torch.nn.functional as F
-import torchvision.models as models
 
+import torch
 from torch.autograd import Variable
-from torch.utils import data
+from torch.utils.data import DataLoader
 
-from model import fcn8s
+from model import FCN8s
 from data import VOCbase
-from loss import CrossEntropyLoss2d
+from utils import CrossEntropyLoss2d
 from config import config
 
 def train(args):
     data_path = config['voc_path']
     loader = VOCbase(data_path, is_transform=True, img_size=(args.img_rows, args.img_cols))
-    trainloader = data.DataLoader(loader, batch_size=args.batch_size, num_workers=4, shuffle=True)
+    trainloader = DataLoader(loader, batch_size=args.batch_size, num_workers=4, shuffle=True)
 
-    model = fcn8s() 
+    model = FCN8s() 
     model.cuda()
     optimizer = torch.optim.SGD(model.parameters(), lr=args.l_rate, momentum=0.99, weight_decay=5e-4)
 
@@ -33,15 +28,14 @@ def train(args):
             loss.backward()
             optimizer.step()
 
-            if (i+1) % 20 == 0:
+            if (i+1) % 40 == 0:
                 print("Epoch [%d/%d] Loss: %.4f" % (epoch+1, args.n_epoch, loss.data[0]))
+        
+        model.save()
 
-        torch.save(model, "{}_{}_{}.pkl".format(args.arch, args.dataset, epoch))
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Hyperparams')
-    parser.add_argument('--arch', nargs='?', type=str, default='fcn8s')
-    parser.add_argument('--dataset', nargs='?', type=str, default='pascal')
     parser.add_argument('--img_rows', nargs='?', type=int, default=256)
     parser.add_argument('--img_cols', nargs='?', type=int, default=256)
     parser.add_argument('--n_epoch', nargs='?', type=int, default=1)

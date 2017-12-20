@@ -1,10 +1,11 @@
 import torch.nn as nn
 import torch.nn.functional as F
+from .BasicModule import BasicModule
 
-class fcn8s(nn.Module):
-    def __init__(self, n_classes=21, learned_billinear=False):
-        super(fcn8s, self).__init__()
-        self.learned_billinear = learned_billinear
+class FCN8s(BasicModule):
+    def __init__(self, n_classes=21):
+        super().__init__()
+        self.model_name = 'FCN8s'
         self.n_classes = n_classes
 
         self.conv_block1 = nn.Sequential(
@@ -60,12 +61,6 @@ class fcn8s(nn.Module):
         self.score_pool4 = nn.Conv2d(512, self.n_classes, 1)
         self.score_pool3 = nn.Conv2d(256, self.n_classes, 1)
 
-        # TODO: Add support for learned upsampling
-        if self.learned_billinear:
-            raise NotImplementedError
-            # upscore = nn.ConvTranspose2d(self.n_classes, self.n_classes, 64, stride=32, bias=False)
-            # upscore.scale_factor = None
-
     def forward(self, x):
         conv1 = self.conv_block1(x)
         conv2 = self.conv_block2(conv1)
@@ -82,7 +77,6 @@ class fcn8s(nn.Module):
         score = F.upsample_bilinear(score, score_pool3.size()[2:])
         score += score_pool3
         out = F.upsample_bilinear(score, x.size()[2:])
-
         return out
 
 
