@@ -1,7 +1,18 @@
 import torch.nn as nn
-import torch.nn.functional as F 
 import torchvision.models as models
+import numpy as np
 from .BasicModule import BasicModule
+
+def get_upsample_filter(size):
+    """Make a 2D bilinear kernel suitable for upsampling"""
+    factor = (size + 1) // 2
+    if size % 2 == 1:
+        center = factor - 1
+    else:
+        center = factor - 0.5
+    og = np.ogrid[:size, :size]
+    filter = (1 - abs(og[0] - center) / factor) * (1 - abs(og[1] - center) / factor)
+    return torch.from_numpy(filter).float()
 
 class FCN8s(BasicModule):
     def __init__(self, n_classes=21):
@@ -91,7 +102,7 @@ class FCN8s(BasicModule):
         score3 += upscore4
 
         out = self.upscore(score3)
-        out = out[:, :, 31:31+x.size()[2], 21:21+x.size()[3]].contiguous()
+        out = out[:, :, 31:31+x.size()[2], 31:31+x.size()[3]].contiguous()
         return out
 
 
@@ -100,7 +111,7 @@ class FCN8s(BasicModule):
         self.init_vgg16_params(vgg16)
 
 
-    def init_vgg16_params(self, vgg16, copy_fc8=True):
+    def init_vgg16_params(self, vgg16, copy_fc8=True, init_upscore=True):
         blocks = [self.conv_block1,
                   self.conv_block2,
                   self.conv_block3,
@@ -128,3 +139,26 @@ class FCN8s(BasicModule):
             l2 = self.classifier[6]
             l2.weight.data = l1.weight.data[:n_class, :].view(l2.weight.size())
             l2.bias.data = l1.bias.data[:n_class]
+
+	if init_upscore:
+            # initialize upscore layer
+            c1, c2, h, w = self.upscore.weight.data.size()
+            assert c1 == c2 == n_class
+            assert h == w
+            weight = get_upsample_filter(h)
+            self.upscore.weight.data = \
+                weight.view(1, 1, h, w).repeat(c1, c2, 1, 1)
+            
+            c1, c2, h, w = self.upscore_4.weight.data.size()
+            assert c1 == c2 == n_class
+            assert h == w
+            weight = get_upsample_filter(h)
+            self.upscore_4.weight.data = \
+                weight.view(1, 1, h, w).repeat(c1, c2, 1, 1)
+                
+            c1, c2, h, w = self.upscore_5.weight.data.size()
+            assert c1 == c2 == n_class
+            assert h == w
+            weight = get_upsample_filter(h)
+            self.upscore_5.weight.data = \
+                weight.view(1, 1, h, w).repeat(c1, c2, 1, 1)

@@ -112,11 +112,12 @@ if __name__ == '__main__':
     parser.add_argument('--n_epoch', type=int, default=1)
     parser.add_argument('--batch_size', type=int, default=8)
     parser.add_argument('--lr', type=float, default=1e-4)
-    parser.add_argument('--momentum', type=float, default=0.95)
     parser.add_argument('--lr_decay', type=float, default=0.9)
+    parser.add_argument('--momentum', type=float, default=0.95)
     parser.add_argument('--weight_decay', type=float, default=5e-4)
     # params for test phase
-    parser.add_argument('--model_path', type=str, default='./checkpoints/FCN8s_1220_2154.pkl')
+    parser.add_argument('--model_path', type=str, default=None)
+    # parser.add_argument('--model_path', type=str, default='./checkpoints/FCN8s_1220_2154.pkl')
     parser.add_argument('--in_path', type=str, default=config['voc_path'] + 'JPEGImages/2008_000002.jpg')
     parser.add_argument('--out_path', type=str, default='./results/')
     
