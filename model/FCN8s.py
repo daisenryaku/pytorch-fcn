@@ -1,5 +1,6 @@
 import torch.nn as nn
-import torch.nn.functional as F
+import torch.nn.functional as F 
+import torchvision.models as models
 from .BasicModule import BasicModule
 
 class FCN8s(BasicModule):
@@ -78,6 +79,11 @@ class FCN8s(BasicModule):
         score += score_pool3
         out = F.upsample_bilinear(score, x.size()[2:])
         return out
+
+
+    def init(self):
+        vgg16 = models.vgg16(pretrained=True)
+        self.init_vgg16_params(vgg16)
 
 
     def init_vgg16_params(self, vgg16, copy_fc8=True):

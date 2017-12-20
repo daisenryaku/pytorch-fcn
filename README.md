@@ -39,7 +39,7 @@ python main.py --phase test --in_path xxx/xxx.jpg --out_path ./results/
 
 ## Result
 ![](results/2008_000002.jpg)
-![](results/2008_000002_result.jpg)
+![](results/result_2008_000002.jpg)
 
 ## Reference
 [1] [Long J, Shelhamer E, Darrell T. Fully convolutional networks for semantic segmentation[C]//Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition. 2015: 3431-3440.](https://people.eecs.berkeley.edu/~jonlong/long_shelhamer_fcn.pdf)

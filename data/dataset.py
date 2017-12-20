@@ -1,7 +1,6 @@
 import os
 import collections
 import torch
-import torchvision
 import numpy as np
 import scipy.misc as m
 import scipy.io as io
