@@ -26,7 +26,6 @@ def train(args):
     lr = args.lr
     optimizer = torch.optim.SGD(model.parameters(), lr=lr, momentum=args.momentum, weight_decay=args.weight_decay)
 
-    previous_loss = 1e10
     for epoch in range(args.n_epoch):
         for i, (images, labels) in tqdm(enumerate(trainloader)):
             images = Variable(images.cuda())
@@ -37,15 +36,13 @@ def train(args):
             loss.backward()
             optimizer.step()
 
-            if loss.data[0] > previous_loss:
-                lr = lr * args.lr_decay
-                for param_group in optimizer.param_groups:
-                    param_group['lr'] = lr 
-            previous_loss = loss.data[0]
-            
             if (i+1) % 50 == 0:
-                print("Epoch [%d/%d] Loss: %.4f lr:%5f" % (epoch+1, args.n_epoch, loss.data[0], lr))
+                print("Epoch [%d/%d] Loss: %.4f lr:%.10f" % (epoch+1, args.n_epoch, loss.data[0], lr))
         
+        if epoch % 5 == 0:
+            lr = lr * args.lr_decay
+            for param_group in optimizer.param_groups:
+                param_group['lr'] = lr 
         model.save()
 
 def val(args):
@@ -109,15 +106,15 @@ if __name__ == '__main__':
     # params for train phase
     parser.add_argument('--img_rows', type=int, default=256)
     parser.add_argument('--img_cols', type=int, default=256)
-    parser.add_argument('--n_epoch', type=int, default=1)
+    parser.add_argument('--n_epoch', type=int, default=50)
     parser.add_argument('--batch_size', type=int, default=8)
-    parser.add_argument('--lr', type=float, default=1e-4)
-    parser.add_argument('--lr_decay', type=float, default=0.9)
+    parser.add_argument('--lr', type=float, default=1e-5)
+    parser.add_argument('--lr_decay', type=float, default=0.95)
     parser.add_argument('--momentum', type=float, default=0.95)
     parser.add_argument('--weight_decay', type=float, default=5e-4)
     # params for test phase
-    parser.add_argument('--model_path', type=str, default=None)
-    # parser.add_argument('--model_path', type=str, default='./checkpoints/FCN8s_1220_2154.pkl')
+    # parser.add_argument('--model_path', type=str, default=None)
+    parser.add_argument('--model_path', type=str, default='./checkpoints/FCN8s_1221_0739.pkl')
     parser.add_argument('--in_path', type=str, default=config['voc_path'] + 'JPEGImages/2008_000002.jpg')
     parser.add_argument('--out_path', type=str, default='./results/')
     

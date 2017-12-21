@@ -1,4 +1,3 @@
-./config.py
 *.pyc
 *.pth
 __pycache__

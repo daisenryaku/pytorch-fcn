@@ -1,3 +1,4 @@
+import torch
 import torch.nn as nn
 import torchvision.models as models
 import numpy as np
@@ -139,26 +140,23 @@ class FCN8s(BasicModule):
             l2 = self.classifier[6]
             l2.weight.data = l1.weight.data[:n_class, :].view(l2.weight.size())
             l2.bias.data = l1.bias.data[:n_class]
-
-	if init_upscore:
+            
+        if init_upscore:
             # initialize upscore layer
             c1, c2, h, w = self.upscore.weight.data.size()
             assert c1 == c2 == n_class
             assert h == w
             weight = get_upsample_filter(h)
-            self.upscore.weight.data = \
-                weight.view(1, 1, h, w).repeat(c1, c2, 1, 1)
+            self.upscore.weight.data = weight.view(1, 1, h, w).repeat(c1, c2, 1, 1)
             
-            c1, c2, h, w = self.upscore_4.weight.data.size()
+            c1, c2, h, w = self.upscore4.weight.data.size()
             assert c1 == c2 == n_class
             assert h == w
             weight = get_upsample_filter(h)
-            self.upscore_4.weight.data = \
-                weight.view(1, 1, h, w).repeat(c1, c2, 1, 1)
+            self.upscore4.weight.data = weight.view(1, 1, h, w).repeat(c1, c2, 1, 1)
                 
-            c1, c2, h, w = self.upscore_5.weight.data.size()
+            c1, c2, h, w = self.upscore5.weight.data.size()
             assert c1 == c2 == n_class
             assert h == w
             weight = get_upsample_filter(h)
-            self.upscore_5.weight.data = \
-                weight.view(1, 1, h, w).repeat(c1, c2, 1, 1)
+            self.upscore5.weight.data = weight.view(1, 1, h, w).repeat(c1, c2, 1, 1)
