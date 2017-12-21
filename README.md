@@ -38,9 +38,9 @@ python main.py --phase test --in_path xxx/xxx.jpg --out_path ./results/
 ```
 
 ## Result
-![](results/2008_000002.jpg) | ![](results/result_2008_000002.jpg)
-:---------------------------:|:----------------------------------:
-Displayed Raw jpg            |Displayed Predictions jpg
+![](results/2007_000032.jpg) |![](results/2007_000032.png) |![](results/result_2007_000032.jpg)
+:---------------------------:|:---------------------------:|:---------------------------------:
+Displayed Raw jpg            |Displayed Ground truth label |Displayed Predictions jpg
 
 ## Reference
 [1] [Long J, Shelhamer E, Darrell T. Fully convolutional networks for semantic segmentation[C]//Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition. 2015: 3431-3440.](https://people.eecs.berkeley.edu/~jonlong/long_shelhamer_fcn.pdf)
